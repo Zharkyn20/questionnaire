@@ -47,7 +47,7 @@ function SignUpForm() {
           error={errors.password?.message}
         />
         <Button type="submit">
-          <span className="font-medium">Sign in</span>
+          <span className="font-medium">Sign up</span>
         </Button>
         <div>
           <p className="text-center">
