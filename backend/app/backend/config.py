@@ -1,20 +1,28 @@
-from pydantic import BaseModel, BaseSettings
+from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
+from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 
-class DatabaseConfig(BaseModel):
-    dsn: str = "postgresql://user:password@host:port/dbname"
+db_host = os.getenv("DB_HOST")
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
 
+url = URL.create(
+    drivername="postgresql",
+    username=f"{db_user}",
+    password=f"{db_password}g",
+    host=f"{db_host}",
+    database="mydb",
+    port=5432
+)
 
-class Config(BaseSettings):
-    database: DatabaseConfig = DatabaseConfig()
-    token_key: str = ""
+engine = create_engine(url)
+Session = sessionmaker(bind=engine)
+session = Session()
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        env_prefix = "MYAPI_"
-        env_nested_delimiter = "__"
-        case_sensitive = False
+Base = declarative_base()
 
-
-config = Config()
+Base.metadata.create_all(engine)

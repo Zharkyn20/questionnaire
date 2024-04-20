@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-
 from const import (
     OPEN_API_DESCRIPTION,
     OPEN_API_TITLE,
 )
+
+from routers import course
 
 app = FastAPI(
     title=OPEN_API_TITLE,
@@ -14,3 +15,8 @@ app = FastAPI(
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
+
+app.include_router(course.router)
+
+

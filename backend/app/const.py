@@ -1,7 +1,5 @@
-from enum import Enum
 from typing import (
     Final,
-    List,
 )
 
 OPEN_API_TITLE: Final = "QUESTIONNAIRE"
