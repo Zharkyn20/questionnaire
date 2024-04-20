@@ -2,6 +2,10 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
+    colors: {
+      primary: "#f50057",
+      secondary: "#00F59E",
+    },
     fontWeight: {
       thin: "100",
       hairline: "100",
