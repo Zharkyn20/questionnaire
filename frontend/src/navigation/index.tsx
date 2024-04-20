@@ -6,11 +6,12 @@ import {
 } from "react-router-dom";
 import Root from "./root";
 import { CommonRoutes } from "@/navigation/common/routes";
+import { AuthRoutes } from "./auth/routes";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
-      {/* {AuthRoutes} */}
+      {AuthRoutes}
       <Route path="" element={<Root />}>
         {CommonRoutes}
       </Route>
