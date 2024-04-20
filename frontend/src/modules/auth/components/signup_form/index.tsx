@@ -1,10 +1,11 @@
-import Button from "@/components/shared/button";
+
 import Input from "@/components/shared/input";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schema } from "./schema";
 import { useCallback } from "react";
+import Button from "@/components/shared/Button";
 
 function SignUpForm() {
   const {
