@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
-import SignInPage from "./signin";
-import SignUpPage from "./signup";
+import SignInPage from "./SignInPage";
+import SignUpPage from "./SignUpPage";
 
 export const AuthRoutes = (
   <>
