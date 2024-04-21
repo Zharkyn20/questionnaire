@@ -51,3 +51,14 @@ email_port = os.getenv("EMAIL_PORT")
 
 # Redis client
 redis_client = redis.Redis(host=os.getenv("REDIS_HOST"), port=os.getenv("REDIS_PORT"), db=0)
+
+# Azure Language Settings
+azure_endpoint = os.getenv("AZURE_QUESTIONANSWERING_ENDPOINT")
+azure_key = os.getenv("AZURE_QUESTIONANSWERING_KEY")
+
+# Gemini API settings
+gemini_project_id = os.getenv("GEMINI_PROJECT_ID")
+gemini_region = os.getenv("GEMINI_REGION")
+gemini_api_key_path = os.getenv("GEMINI_API_KEY_PATH")
+gemini_api_url = os.getenv("GEMINI_API_URL")
+google_credentials_url = os.getenv("GOOGLE_CREDENTIALS_URL")
