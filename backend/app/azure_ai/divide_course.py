@@ -1,6 +1,17 @@
-def divide_course(course):
+from backend.app.chatgpt.controller import gpt
 
-    #Logik for division with OpenAi
+
+def divide_course(course):
+    print("course", course)
+
+    response = gpt.generate_chat_completion(
+        messages=[
+            {"role": "system", "content": "You are a virtual assistant, who analyzes the course content and divides it into topics with contents, without updating/deleting."},
+            {"role": "user", "content": course.file_content}
+        ],
+
+    )
+    print("response", response.choices[0].message)
 
     return [
         {
