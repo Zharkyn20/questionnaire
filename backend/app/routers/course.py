@@ -8,7 +8,6 @@ from backend.app.azure_ai.generate_link import get_test_link
 from backend.app.azure_ai.generate_link import open_token
 from backend.app.azure_ai.check_input import check_input
 from backend.app.azure_ai.divide_course import divide_course
-
 from fastapi import HTTPException, File, UploadFile
 import io
 import PyPDF2
@@ -22,15 +21,9 @@ router = APIRouter()
 
 
 # Course Logic
-@router.post("/course/create/", tags=["courses"])
-async def create_course( lms_id: int, title: str, mode: str, description: str = "",
+@router.post("/course/", tags=["courses"])
+async def create_course(title: str, mode: str, description: str = "",
                         file: UploadFile = File(None), session: Session = Depends(get_db_session)):
-
-    # user = session.query(User).filter(User.id == user_id).first()
-    # if user is None:
-    #     user = User(id=user_id)
-    #     session.add(user)
-    #     session.commit()
 
     try:
         if file is not None:
@@ -46,9 +39,9 @@ async def create_course( lms_id: int, title: str, mode: str, description: str = 
 
         session.add(course)
         session.commit()
-        #Divide course on topics
 
-        subtopics = divide_course(course)
+        #Divide course on topics
+        subtopics = divide_course(course, all_text)
 
         for subtopic in subtopics:
             obj = SubTopic(title=subtopic["title"], description=subtopic["description"], course_id=subtopic["course_id"])
@@ -58,7 +51,8 @@ async def create_course( lms_id: int, title: str, mode: str, description: str = 
 
         return {
             "message": "Course created",
-            "course_title": course.title
+            "course_title": course.title,
+            "course_id": course.id,
         }
     except Exception as e:
         session.rollback()
@@ -67,8 +61,7 @@ async def create_course( lms_id: int, title: str, mode: str, description: str = 
         }
 
 
-
-@router.get("/course/get/", tags=["courses"])
+@router.get("/course/", tags=["courses"])
 async def get_all_courses(session: Session = Depends(get_db_session)):
     courses_query = session.query(Course).options(joinedload(Course.subtopics))
     courses = courses_query.all()
@@ -86,7 +79,7 @@ async def get_all_courses(session: Session = Depends(get_db_session)):
     return courses_dict
 
 
-@router.get("/course/get/", tags=["courses"])
+@router.get("/course/{course_id}", tags=["courses"])
 async def get_course(course_id: int, session: Session = Depends(get_db_session)):
     course = session.query(Course).filter(Course.id == course_id).options(joinedload(Course.subtopics)).first()
 
@@ -97,7 +90,7 @@ async def get_course(course_id: int, session: Session = Depends(get_db_session))
         "id": course.id,
         "title": course.title,
         "description": course.description,
-        "subtopics": [subtopic.title for subtopic in course.subtopics]
+        "subtopics": [subtopic.id for subtopic in course.subtopics]
     }
 
     return course_dict
@@ -106,7 +99,7 @@ async def get_course(course_id: int, session: Session = Depends(get_db_session))
 # SubTopic Logik
 
 # There цe receive data about the course and generate questions for it
-@router.post("/subtopic/create/", tags=["subtopics"])
+@router.post("/subtopic/", tags=["subtopics"])
 async def create_subtopic(title: str, description: str, course_id: int, session: Session = Depends(get_db_session)):
     course = session.query(Course).filter(Course.id == course_id).first()
     if course is None:
@@ -119,12 +112,6 @@ async def create_subtopic(title: str, description: str, course_id: int, session:
         session.add(subtopic)
         session.commit()
 
-        # generated = generate_question(question_amount, subtopic.id, description)
-        #
-        # if generated:
-        #     subtopic.questions_generated = True
-        #     session.commit()
-
         return {
             "message": "Subtopic created", "subtopic_title": subtopic.title
         }
@@ -135,7 +122,7 @@ async def create_subtopic(title: str, description: str, course_id: int, session:
         }
 
 
-@router.get("/subtopic/get/", tags=["subtopics"])
+@router.get("/subtopic/", tags=["subtopics"])
 async def get_subtopic(subtopic_id: int, session: Session = Depends(get_db_session)):
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
 
@@ -144,8 +131,9 @@ async def get_subtopic(subtopic_id: int, session: Session = Depends(get_db_sessi
 
     return subtopic
 
+
 # Link Logik
-@router.post("/link/create/", tags=["link"])
+@router.post("/link/", tags=["link"])
 async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amount: int = 10, session: Session = Depends(get_db_session)):
     user = session.query(User).filter(User.id == user_id).first()
     if user is None:
@@ -176,12 +164,12 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
         session.commit()
 
     return {
-        "url": "fronlink/" + str(get_test_link(subtopic_id)),
+        "url": str(get_test_link(subtopic_id)),
     }
 
 
 # Question Logik
-@router.get("/question/get/", tags=["question"])
+@router.get("/question/", tags=["question"])
 async def get_question(token: str, session: Session = Depends(get_db_session)):
     subtopic_id = int(open_token(int(token)))
 
@@ -190,8 +178,6 @@ async def get_question(token: str, session: Session = Depends(get_db_session)):
 
     if subtopic is None:
         return {"error": "Course not found"}
-
-
 
     if subtopic.current_question == subtopic.questions_amount:
         return {"message": "Test finished"}
