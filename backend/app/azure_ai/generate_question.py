@@ -6,10 +6,12 @@ from backend.app.chatgpt.controller import gpt
 import json
 import ast
 
+
 def delete_word_at_start(sentence, word):
     if sentence.startswith(word):
         return sentence[len(word):].lstrip()  # Remove the word and any leading whitespace
     return sentence
+
 
 # genearte questions for subtopic(now simple version)
 def generate_question(amount, subtopic_id, description, user_id, session: Session = Depends(get_db_session)):
@@ -20,26 +22,25 @@ def generate_question(amount, subtopic_id, description, user_id, session: Sessio
             {"role": "system",
              "content": f"You are a virtual assistant, who creates {amount} questions with 3 incorrect and 1 correct answer."
                         " The full response should be a valid python list of dictionaries without any string and data"
-                        "(question_text, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, correct_answer)"},
+                        "(question_text, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, correct_answer) every key in dict should be in double quotes"},
             {"role": "user", "content": description}
         ],
     )
 
     response_content = response.content
 
-
     word_to_delete = "python"
-    valid_data = delete_word_at_start(response_content, word_to_delete)
+    valid_data = delete_word_at_start(str(response_content), word_to_delete)
 
 
     data = json.loads(str(valid_data))
 
-    # print(data)
 
+    # print(data)
     counter = 0
     for q in data:
         question = Question(
-            number=0,
+            number=counter,
             answered=False,
             subtopic_id=subtopic_id,
             question=ast.literal_eval(str(q))["question_text"],
@@ -59,7 +60,6 @@ def generate_question(amount, subtopic_id, description, user_id, session: Sessio
         session.commit()
 
     return True
-
 
 
 
