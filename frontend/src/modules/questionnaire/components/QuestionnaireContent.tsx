@@ -28,7 +28,6 @@ const QuestionnaireContent = () => {
   } = useQuery({ queryKey: ["question", token], queryFn: () => getQuestion({ token }) });
   const { mutateAsync, data: checkAnswerData } = useMutation({ mutationKey: ["checkAnswer"], mutationFn: checkAnswer });
 
-  console.log(questionData, checkAnswerData);
   const [answerValue, setAnswerValue] = useState<AnswerType>();
   const [answerResponse, setAnswerResponse] = useState<CheckAnswerResponse>();
 
