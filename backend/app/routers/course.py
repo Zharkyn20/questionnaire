@@ -41,7 +41,7 @@ async def create_course(title: str, mode: str, description: str = "",
         session.commit()
 
         #Divide course on topics
-        subtopics = divide_course(course)
+        subtopics = divide_course(course, all_text)
 
         for subtopic in subtopics:
             obj = SubTopic(title=subtopic["title"], description=subtopic["description"], course_id=subtopic["course_id"])

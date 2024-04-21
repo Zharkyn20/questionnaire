@@ -57,3 +57,6 @@ cors_origins = os.getenv("CORS_ORIGINS").split(" ") or ["*"] # List of allowed o
 
 # ChatGPT settings
 openai_api_key = os.getenv("OPENAI_API_KEY")
+
+# Azure settings
+azure_key, azure_endpoint = os.getenv("AZURE_QUESTIONANSWERING_KEY"), os.getenv("AZURE_QUESTIONANSWERING_ENDPOINT")
