@@ -1,15 +1,21 @@
-# Function for link generation
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.backends import default_backend
+# In future use special library for encryption and decryption!
 
-def get_test_link(user_id):
-    token = 12345
-    return "link/example/" + str(token)
+def encrypt_number(number):
+    number = number * 171 + 348
+    return number
+
+
+def decrypt_number(number):
+    number = (number - 348) / 171
+    return number
+
+
+def get_test_link(token):
+    # Super entcryption
+    return "link/example/" + str(encrypt_number(token))
 
 
 def open_token(token):
-    # Логика с расшифровкой
-    return token
+    return decrypt_number(token)
 
 

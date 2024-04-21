@@ -1,6 +1,6 @@
 from sqlite3 import IntegrityError
 from typing import List
-
+import pdfplumber
 from models.course import Course, SubTopic, Question
 from backend.config import session
 from sqlalchemy.orm import joinedload
@@ -8,11 +8,11 @@ from azure_ai.generate_question import generate_question
 from azure_ai.generate_link import get_test_link
 from azure_ai.generate_link import open_token
 from azure_ai.check_input import check_input
+from azure_ai.divide_course import divide_course
+
 from fastapi import HTTPException, File, UploadFile
-from cryptography.hazmat.primitives import serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.backends import default_backend
-import base64
+import io
+import PyPDF2
 
 from fastapi import (
     APIRouter,
@@ -24,15 +24,31 @@ router = APIRouter()
 # Course Logic
 @router.post("/course/create/", tags=["courses"])
 async def create_course(title: str, mode: str, description: str = "", file: UploadFile = File(None)):
+
     try:
         if file is not None:
             content = await file.read()
-            course = Course(title=title, description=description, mode=mode, file_content=content)
+            pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
+            all_text = ""
+            for page_num in range(len(pdf_reader.pages)):
+                all_text += ' '.join(pdf_reader.pages[page_num].extract_text().split("\n")) + "\n"
+            course = Course(title=title, description=description, mode=mode, file_content=all_text)
         else:
             course = Course(title=title, description=description, mode=mode)
 
         session.add(course)
         session.commit()
+
+        #Divide course on topics
+
+        subtopics = divide_course(course)
+
+        for subtopic in subtopics:
+            obj = SubTopic(title=subtopic["title"], description=subtopic["description"], course_id=subtopic["course_id"])
+            session.add(obj)
+            session.commit()
+
+
         return {
             "message": "Course created",
             "course_title": course.title
@@ -125,20 +141,11 @@ async def get_subtopic(subtopic_id: int):
 @router.post("/link/create/", tags=["link"])
 async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amount: int = 10):
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
+    if subtopic is None:
+        return {"error": "Course not found"}
+
     subtopic.questions_amount = question_amount
     session.commit()
-
-    # private_key = rsa.generate_private_key(
-    #     public_exponent=65537,
-    #     key_size=2048,
-    #     backend=default_backend()
-    # )
-    #
-    # public_key = private_key.public_key()
-
-    # subtopic.public_key = public_key
-    # subtopic.private_key = private_key
-    # session.commit()
 
     generated = generate_question(question_amount, subtopic.id, subtopic.description)
 
@@ -146,45 +153,28 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
         subtopic.questions_generated = True
         session.commit()
 
-    # encrypted_data = public_key.encrypt(
-    #     course_id.encode(),
-    #     padding.OAEP(
-    #         mgf=padding.MGF1(algorithm=padding.SHA256()),
-    #         algorithm=padding.SHA256(),
-    #         label=None
-    #     )
-    # )
-
-    # encrypted_data_str = base64.b64encode(encrypted_data).decode()
-
     return {
-        "url": "fronlink/" + str(subtopic_id),
+        "url": "fronlink/" + str(get_test_link(subtopic_id)),
     }
 
 
 # Question Logik
 @router.get("/question/get/", tags=["question"])
 async def get_question(token: str):
-    # encrypted_data = base64.b64decode(encrypted_data_str)
-    #
-    # decrypted_data = private_key.decrypt(
-    #     encrypted_data,
-    #     padding.OAEP(
-    #         mgf=padding.MGF1(algorithm=padding.SHA256()),
-    #         algorithm=padding.SHA256(),
-    #         label=None
-    #     )
-    # )
+    subtopic_id = int(open_token(int(token)))
 
-    # subtopic_id = int(open_token(token))
-
-    subtopic = session.query(SubTopic).filter(SubTopic.id == token).options(
+    subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).options(
         joinedload(SubTopic.questions)).first()
+
+    if subtopic is None:
+        return {"error": "Course not found"}
+
+
 
     if subtopic.current_question == subtopic.questions_amount:
         return {"message": "Test finished"}
 
-    question = session.query(Question).filter(Question.subtopic_id == token, Question.number == subtopic.current_question).first()
+    question = session.query(Question).filter(Question.subtopic_id == subtopic_id, Question.number == subtopic.current_question).first()
     return question
 
 
@@ -198,6 +188,9 @@ async def check_question(
 ):
 
     question = session.query(Question).filter(Question.id == question_id).first()
+
+    subtopic = session.query(SubTopic).filter(SubTopic.id ==question.subtopic_id).first()
+    course = session.query(Course).filter(Course.id == (subtopic.course_id)).first()
 
     if not question:
         raise HTTPException(status_code=404, detail="Question not found")
@@ -229,9 +222,12 @@ async def check_question(
     if result == "success":
         question.answered = True
     else:
-        question.amount_fails += 1
-        question.number = subtopic.questions_amount
-        subtopic.questions_amount += 1
+        if course.mode == "dynamic":
+            question.amount_fails += 1
+            question.number = subtopic.questions_amount
+            subtopic.questions_amount += 1
+        # else:
+            # continue logik for future modes
 
     session.commit()
 

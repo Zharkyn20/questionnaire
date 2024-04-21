@@ -10,10 +10,11 @@ def generate_question(amount, subtopic_id, description):
         question = Question(
             number=i,
             subtopic_id=subtopic_id,
-            question="text",
+            question=f"my question with number {i} is ->  what is ypu name? (correct answer is 19)",
             type="single",
-            answer="answer",
+            answer="19",
             time=9,
+            answers=["20", "90", "19", "99"]
         )
         session.add(question)
         session.commit()
