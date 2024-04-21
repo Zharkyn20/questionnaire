@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from backend.app.backend.azure_language_processing import sample
+# from backend.app.backend.azure_language_processing import sample
 from backend.app.backend.config import get_db_session
-from backend.app.backend.gemini import gemini
+# from backend.app.backend.gemini import gemini
 from backend.app.models import LMS
 from backend.app.services.auth import create_access_token, create_refresh_token, verify_token
 from backend.app.services.verify_email import send_code_to_email, verify_verification_code, check_email_is_verified
