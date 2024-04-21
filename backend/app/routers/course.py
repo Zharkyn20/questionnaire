@@ -32,14 +32,18 @@ async def create_course(title: str, mode: str, description: str = "",
                         ):
 
     try:
+        print('file', file)
         if file is not None:
             content = await file.read()
+            print('content', content)
             pdf_reader = PyPDF2.PdfReader(io.BytesIO(content))
             all_text = ""
             for page_num in range(len(pdf_reader.pages)):
                 all_text += ' '.join(pdf_reader.pages[page_num].extract_text().split("\n")) + "\n"
 
-        course = Course(title=title, description=description, mode=mode, lms_id=current_user.id)
+            course = Course(title=title, description=description, mode=mode, lms_id=current_user.id)
+        else:
+            course = Course(title=title, description=description, mode=mode, lms_id=current_user.id)
 
 
         session.add(course)
