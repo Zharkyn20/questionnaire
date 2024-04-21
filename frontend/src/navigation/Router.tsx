@@ -8,10 +8,18 @@ import { CommonRoutes } from "@/navigation/common/routes";
 import { AuthRoutes } from "./auth/routes";
 import { Outlet, Navigate } from "react-router-dom";
 import useAuthStore from "@/modules/auth/store";
+import Header from "@/layout/header";
 
 const PrivateRoutes = () => {
   const userState = useAuthStore();
-  return userState.access_token ? <Outlet /> : <Navigate to="/signin" />;
+  return userState.access_token ? (
+    <>
+      <Header />
+      <Outlet />
+    </>
+  ) : (
+    <Navigate to="/signin" />
+  );
 };
 
 const AuthRoutesElement = () => {
