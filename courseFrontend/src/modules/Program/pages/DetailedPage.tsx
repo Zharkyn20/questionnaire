@@ -19,17 +19,16 @@ const contents = [
 ];
 
 const DetailedPage = () => {
-  const { mutateAsync, data, isPending } = useMutation({ mutationFn: createLink, mutationKey: ["createLink"] });
+  const { mutateAsync, isPending } = useMutation({ mutationFn: createLink, mutationKey: ["createLink"] });
   const { id } = useParams();
 
   const content = id && contents[Number(id)];
 
-  console.log(data);
-
   const handleTestClick = async () => {
-    const {
-      data: { url },
-    } = await mutateAsync(Number(id));
+    const response = await mutateAsync(Number(id));
+
+    const url = response.data.url;
+
     if (url) window.open(url, "_blank");
   };
 

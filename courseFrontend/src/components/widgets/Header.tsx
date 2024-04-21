@@ -38,7 +38,7 @@ const Header = () => {
             </Link>
           ))}
         </div>
-        <button className=" bg-white rounded-full p-2" onClick={() => navigate("/profile")}>
+        <button className=" bg-white rounded-full p-2" onClick={() => navigate("/")}>
           <svg
             enable-background="new 0 0 32 32"
             height="32px"
