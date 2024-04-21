@@ -1,5 +1,5 @@
 from sqlite3 import IntegrityError
-from typing import List
+from typing import List, Optional
 from backend.app.models.course import Course, SubTopic, Question, User, UserCourse
 from backend.app.backend.config import get_db_session
 from sqlalchemy.orm import joinedload
@@ -17,13 +17,19 @@ from fastapi import (
     APIRouter, Depends,
 )
 
+from backend.app.models import LMS
+from backend.app.services.auth import get_current_user, is_authenticated
+
 router = APIRouter()
 
 
 # Course Logic
 @router.post("/course/", tags=["courses"])
 async def create_course(title: str, mode: str, description: str = "",
-                        file: UploadFile = File(None), session: Session = Depends(get_db_session)):
+                        file: UploadFile = File(None), session: Session = Depends(get_db_session),
+                        current_user: Optional[LMS] = Depends(get_current_user),
+                        is_authed: bool = Depends(is_authenticated)
+                        ):
 
     try:
         if file is not None:
@@ -33,9 +39,8 @@ async def create_course(title: str, mode: str, description: str = "",
             for page_num in range(len(pdf_reader.pages)):
                 all_text += ' '.join(pdf_reader.pages[page_num].extract_text().split("\n")) + "\n"
 
-            course = Course(title=title, description=description, mode=mode)
-        else:
-            course = Course(title=title, description=description, mode=mode)
+        course = Course(title=title, description=description, mode=mode, lms_id=current_user.id)
+
 
         session.add(course)
         session.commit()
@@ -53,6 +58,7 @@ async def create_course(title: str, mode: str, description: str = "",
             "message": "Course created",
             "course_title": course.title,
             "course_id": course.id,
+            "lms_id": course.lms_id,
         }
     except Exception as e:
         session.rollback()
@@ -62,9 +68,13 @@ async def create_course(title: str, mode: str, description: str = "",
 
 
 @router.get("/course/", tags=["courses"])
-async def get_all_courses(session: Session = Depends(get_db_session)):
+async def get_all_courses(
+        session: Session = Depends(get_db_session),
+        current_user: Optional[LMS] = Depends(get_current_user),
+        is_authed: Optional[bool] = Depends(is_authenticated)
+    ):
     courses_query = session.query(Course).options(joinedload(Course.subtopics))
-    courses = courses_query.all()
+    courses = courses_query.filter(Course.lms_id == current_user.id).all()
 
     courses_dict = []
     for course in courses:
@@ -73,7 +83,7 @@ async def get_all_courses(session: Session = Depends(get_db_session)):
             "title": course.title,
             "description": course.description,
             "mode": course.mode,
-            "subtopics": [subtopic.title for subtopic in course.subtopics]
+            "subtopics": [subtopic.title for subtopic in course.subtopics],
         }
         courses_dict.append(course_dict)
 
