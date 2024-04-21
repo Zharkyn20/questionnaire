@@ -8,8 +8,8 @@ interface TokenResponse {
 
 interface ApiClient {
   get: <T>(path: string) => Promise<T>;
-  post: <T>(path: string, data: T) => Promise<T>;
-  put: <T>(path: string, data: T) => Promise<T>;
+  post: <T>(path: string, data: T, formData?: FormData) => Promise<T>;
+  put: <T>(path: string, data: T, formData?: FormData) => Promise<T>;
   del: (path: string) => Promise<void | AxiosError>;
 }
 
@@ -51,7 +51,7 @@ export const ApiClient = (): ApiClient => {
         });
 
         try {
-          const response = await api.post<TokenResponse>("/refresh", data);
+          const response = await api.post<TokenResponse>("/lms/refresh/", data);
 
           userState.updateToken(response.data.token);
 
@@ -71,13 +71,21 @@ export const ApiClient = (): ApiClient => {
     return response.data;
   };
 
-  const post = async <T,>(path: string, data: T): Promise<T> => {
-    const response = await api.post<T>(path, null, { params: data });
+  const post = async <T,>(
+    path: string,
+    data: T,
+    formData?: FormData
+  ): Promise<T> => {
+    const response = await api.post<T>(path, formData, { params: data });
     return response.data;
   };
 
-  const put = async <T,>(path: string, data: T): Promise<T> => {
-    const response = await api.put<T>(path, null, { params: data });
+  const put = async <T,>(
+    path: string,
+    data: T,
+    formData?: FormData
+  ): Promise<T> => {
+    const response = await api.put<T>(path, formData, { params: data });
     return response.data;
   };
 

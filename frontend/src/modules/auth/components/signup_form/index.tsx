@@ -20,9 +20,13 @@ function SignUpForm() {
   const [loading, setLoading] = useState(false);
 
   const signup = useCallback(
-    async (data: { email: string; password: string }) => {
+    async (data: { email: string; password: string; name: string }) => {
       setLoading(true);
-      await userState.signin({ email: data.email, password: data.password });
+      await userState.signup({
+        email: data.email,
+        password: data.password,
+        name: data.name,
+      });
       setLoading(false);
     },
     [userState]
@@ -45,7 +49,7 @@ function SignUpForm() {
         <Input
           label="Company name"
           error={errors.email?.message}
-          {...register("company_name")}
+          {...register("name")}
         />
         <Input.Password
           label="Password"
