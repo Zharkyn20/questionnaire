@@ -72,6 +72,7 @@ async def get_all_courses(session: Session = Depends(get_db_session)):
             "id": course.id,
             "title": course.title,
             "description": course.description,
+            "mode": course.mode,
             "subtopics": [subtopic.title for subtopic in course.subtopics]
         }
         courses_dict.append(course_dict)
@@ -151,6 +152,9 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
         session.commit()
 
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
+    if subtopic.questions_generated:
+        return {"error": "Questions still generated"}
+
     if subtopic is None:
         return {"error": "Course not found"}
 

@@ -1,3 +1,4 @@
+import random
 from backend.app.models.course import Question
 from backend.app.backend.config import get_db_session
 from sqlalchemy.orm import Session
@@ -21,6 +22,7 @@ def generate_question(amount, subtopic_id, description, user_id, session: Sessio
         messages=[
             {"role": "system",
              "content": f"You are a virtual assistant, who creates {amount} questions with 3 incorrect and 1 correct answer."
+                        f"All incorrect answers mustn't be the same."
                         " The full response should be a valid python list of dictionaries without any string and data"
                         "(question_text, incorrect_answer_1, incorrect_answer_2, incorrect_answer_3, correct_answer) every key in dict should be in double quotes"},
             {"role": "user", "content": description}
@@ -39,6 +41,16 @@ def generate_question(amount, subtopic_id, description, user_id, session: Sessio
     # print(data)
     counter = 0
     for q in data:
+        random_number = random.randint(0, 3)
+        variants = [0] * 4
+        count = 1
+        for i in range(4):
+            if i == random_number:
+                variants[i] = ast.literal_eval(str(q))["correct_answer"]
+            else:
+                variants[i] = ast.literal_eval(str(q))["incorrect_answer_" + str(count)]
+                count += 1
+
         question = Question(
             number=counter,
             answered=False,
@@ -47,11 +59,12 @@ def generate_question(amount, subtopic_id, description, user_id, session: Sessio
             type="single",
             answer=ast.literal_eval(str(q))["correct_answer"],
             time=9,
-            variants=[ast.literal_eval(str(q))["incorrect_answer_1"],
-                      ast.literal_eval(str(q))["incorrect_answer_1"],
-                      ast.literal_eval(str(q))["incorrect_answer_1"],
-                      ast.literal_eval(str(q))["correct_answer"]
-                      ],
+            # variants=[ast.literal_eval(str(q))["incorrect_answer_1"],
+            #           ast.literal_eval(str(q))["incorrect_answer_1"],
+            #           ast.literal_eval(str(q))["incorrect_answer_1"],
+            #           ast.literal_eval(str(q))["correct_answer"]
+            #           ],
+            variants=variants,
             user_id=user_id,
             answers=None,
         )
