@@ -12,7 +12,7 @@ def decrypt_number(number):
 
 def get_test_link(token):
     # Super entcryption
-    return "link/example/" + str(encrypt_number(token))
+    return "http://localhost:5173/test/" + str(encrypt_number(token))
 
 
 def open_token(token):
