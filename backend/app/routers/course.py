@@ -166,11 +166,12 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
         session.commit()
 
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
-    if subtopic.questions_generated:
-        return {"error": "Questions still generated"}
 
     if subtopic is None:
         return {"error": "Course not found"}
+
+    if subtopic.questions_generated:
+        return {"error": "Questions still generated"}
 
     subtopic.questions_amount = question_amount
     session.commit()
