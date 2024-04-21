@@ -50,6 +50,7 @@ async def login_user(email: str, password: str, db: Session = Depends(get_db_ses
     refresh_token = create_refresh_token(data={"sub": user.email})
 
     return {
+        "id": user.id,
         "access_token": access_token,
         "refresh_token": refresh_token,
         "token_type": "bearer",
