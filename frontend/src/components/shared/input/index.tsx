@@ -1,6 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 import Password from "./password";
+import Document from "./document";
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -34,6 +35,7 @@ const Input = Object.assign(
   }),
   {
     Password,
+    Document,
   }
 );
 
