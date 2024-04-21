@@ -1,6 +1,6 @@
 import { BASE_URL } from "@/consts";
 import axios, { AxiosResponse } from "axios";
-import { CheckAnswerParams, getQuestionParams } from "./types";
+import { CheckAnswerParams, CheckAnswerResponse, getQuestionParams } from "./types";
 
 type GetQuestionResponse = {
   id: number;
@@ -15,6 +15,7 @@ type GetQuestionResponse = {
   type: "single" | "multiple" | "input" | "boolean";
   answer: string;
   time: number;
+  variants: string[];
 };
 
 type TestFinishedResponse = {
@@ -32,6 +33,8 @@ export const getQuestion = async (params: getQuestionParams) => {
   ).data;
 };
 
+
+
 export const checkAnswer = async (params: CheckAnswerParams) => {
-  return await axios({ method: "post", baseURL: BASE_URL, url: "question/check/", params });
+  return (await axios<CheckAnswerResponse>({ method: "post", baseURL: BASE_URL, url: "question/check/", params })).data;
 };
