@@ -15,3 +15,4 @@ export type CheckAnswerParams = {
   bool_answer?: boolean;
   input_answer?: string;
 };
+export type CheckAnswerResponse = { question_id: number; answer: "success" | "fail"; description: string };

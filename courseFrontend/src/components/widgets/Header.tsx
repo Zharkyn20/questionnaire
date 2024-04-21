@@ -27,10 +27,10 @@ const Header = () => {
   return (
     <header className="top-0 w-full z-20 bg-zinc-800">
       <nav className="flex justify-between items-center  w-100 mx-auto border-gray-200 px-6 lg:px-32 py-4 text-lg ">
-        <div className="flex gap-2 fontLogo items-center text-white text-xl hover:cursor-pointer">
-          <Link to="/"><img className="w-8 h-8" src={Logo} alt="logo"/></Link>
+        <Link  to="/" className="flex gap-2 fontLogo items-center text-white text-xl hover:cursor-pointer">
+          <div><img className="w-8 h-8" src={Logo} alt="logo"/></div>
           CourseFactory
-        </div>
+        </Link>
         <div className=" hidden md:flex justify-between items-center gap-12 hover:cursor-pointer mr-20">
           {navItems.map((item) => (
             <Link className="text-white hover:text-orange-200" to={item.anchor} key={item.name}>
@@ -53,8 +53,8 @@ const Header = () => {
                 fill="none"
                 points="   649,137.999 675,137.999 675,155.999 661,155.999  "
                 stroke="#FFFFFF"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 stroke-miterlimit="10"
                 stroke-width="2"
               />
@@ -62,8 +62,8 @@ const Header = () => {
                 fill="none"
                 points="   653,155.999 649,155.999 649,141.999  "
                 stroke="#FFFFFF"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 stroke-miterlimit="10"
                 stroke-width="2"
               />
@@ -71,8 +71,8 @@ const Header = () => {
                 fill="none"
                 points="   661,156 653,162 653,156  "
                 stroke="#FFFFFF"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 stroke-miterlimit="10"
                 stroke-width="2"
               />
