@@ -1,3 +1,6 @@
+import json
+import ast
+
 from backend.app.azure_ai.generate_question import delete_word_at_start
 from backend.app.chatgpt.controller import gpt
 
@@ -20,36 +23,21 @@ def divide_course(course, course_content):
 
     word_to_delete = "python"
     valid_data = delete_word_at_start(str(response_content), word_to_delete)
+    print("valid_data", valid_data)
 
-    parsed_content = parse_content(response.content)
-    list_of_subtopics = []
-    for content in parsed_content:
-        list_of_subtopics.append({
-            "title": content["title"],
-            "description": content["description"],
-            "course_id": course.id,
-        })
-
-    print("list_of_subtopics", list_of_subtopics)
-    return list_of_subtopics
+    subtopics = parse_content(response.content, course.id)
+    return subtopics
 
 
-def parse_content(content):
-    sections = content.split("\n\n")
-    parsed_sections = []
-    for section in sections:
-        if section.strip():
-            # Extract title
-            title_start_index = section.find(". ")
-            title_end_index = section.find("\n", title_start_index)
-            title = section[title_start_index:title_end_index].strip()
+def parse_content(data, course_id):
+    data = json.loads(str(data))
+    # print("data", data)
+    # print(type(data))
+    subtopics = []
+    for item in data:
+        item["title"] = ast.literal_eval(str(item))["title"]
+        item["description"] = ast.literal_eval(str(item))["content"]
+        item["course_id"] = course_id
+        subtopics.append(item)
 
-            # Extract content
-            content_start_index = section.find("\n") + len("\n")
-            content_text = section[content_start_index:].strip()
-
-            parsed_sections.append({
-                "title": title,
-                "description": content_text,
-            })
-    return parsed_sections
+    return data
