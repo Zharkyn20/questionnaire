@@ -1,6 +1,6 @@
 import { Route } from "react-router-dom";
 import HomePage from "./home";
-import QuestionnairePage from "@/pages/QuestionnairePage";
+import QuestionnairePage from "@/navigation/questionnaire/QuestionnairePage";
 
 export const CommonRoutes = (
   <>
