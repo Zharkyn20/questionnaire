@@ -164,7 +164,7 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
         session.commit()
 
     return {
-        "url": "fronlink/" + str(get_test_link(subtopic_id)),
+        "url": str(get_test_link(subtopic_id)),
     }
 
 
