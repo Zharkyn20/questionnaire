@@ -1,7 +1,6 @@
 from sqlite3 import IntegrityError
 from typing import List
-import pdfplumber
-from backend.app.models.course import Course, SubTopic, Question
+from backend.app.models.course import Course, SubTopic, Question, User, UserCourse
 from backend.app.backend.config import get_db_session
 from sqlalchemy.orm import joinedload
 from backend.app.azure_ai.generate_question import generate_question
@@ -24,7 +23,14 @@ router = APIRouter()
 
 # Course Logic
 @router.post("/course/create/", tags=["courses"])
-async def create_course(title: str, mode: str, description: str = "", file: UploadFile = File(None), session: Session = Depends(get_db_session)):
+async def create_course( lms_id: int, title: str, mode: str, description: str = "",
+                        file: UploadFile = File(None), session: Session = Depends(get_db_session)):
+
+    # user = session.query(User).filter(User.id == user_id).first()
+    # if user is None:
+    #     user = User(id=user_id)
+    #     session.add(user)
+    #     session.commit()
 
     try:
         if file is not None:
@@ -33,13 +39,13 @@ async def create_course(title: str, mode: str, description: str = "", file: Uplo
             all_text = ""
             for page_num in range(len(pdf_reader.pages)):
                 all_text += ' '.join(pdf_reader.pages[page_num].extract_text().split("\n")) + "\n"
-            course = Course(title=title, description=description, mode=mode, file_content=all_text)
+
+            course = Course(title=title, description=description, mode=mode)
         else:
             course = Course(title=title, description=description, mode=mode)
 
         session.add(course)
         session.commit()
-
         #Divide course on topics
 
         subtopics = divide_course(course)
@@ -141,6 +147,21 @@ async def get_subtopic(subtopic_id: int, session: Session = Depends(get_db_sessi
 # Link Logik
 @router.post("/link/create/", tags=["link"])
 async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amount: int = 10, session: Session = Depends(get_db_session)):
+    user = session.query(User).filter(User.id == user_id).first()
+    if user is None:
+        # add in future check for user correctness
+        user = User(id=user_id)
+        session.add(user)
+        session.commit()
+
+    usercourse = (session.query(UserCourse).filter(UserCourse.user_id == user_id)
+                  .filter(UserCourse.course_id == course_id).first())
+
+    if usercourse is None:
+        usercourse = UserCourse(user_id=user_id, course_id=course_id)
+        session.add(usercourse)
+        session.commit()
+
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
     if subtopic is None:
         return {"error": "Course not found"}
@@ -148,7 +169,7 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
     subtopic.questions_amount = question_amount
     session.commit()
 
-    generated = generate_question(question_amount, subtopic.id, subtopic.description)
+    generated = generate_question(question_amount, subtopic.id, subtopic.description, user_id, session)
 
     if generated:
         subtopic.questions_generated = True
