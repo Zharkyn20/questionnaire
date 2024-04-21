@@ -1,21 +1,24 @@
-from models.course import Course
-from backend.config import session
+from sqlalchemy.orm import Session
+
 from fastapi import (
-    APIRouter,
+    APIRouter, Depends,
 )
+
+from backend.app.backend.config import get_db_session
+from backend.app.models import Course
 
 router = APIRouter(prefix="/" + "courses")
 
 
 @router.get("/create")
-async def create_course(title: str, description: str):
+async def create_course(title: str, description: str, db: Session = Depends(get_db_session)):
     course = Course(title=title, description=description)
-    session.add(course)
-    session.commit()
+    db.add(course)
+    db.commit()
     return {"course added": course.title}
 
 
 @router.get("/get")
-async def get_all_courses():
-    courses_query = session.query(Course)
+async def get_all_courses(db: Session = Depends(get_db_session)):
+    courses_query = db.query(Course)
     return courses_query.all()

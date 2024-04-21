@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from backend.config import Base
+
+from backend.app.backend.config import Base
+
 
 class Course(Base):
     __tablename__ = "courses"
@@ -7,4 +9,3 @@ class Course(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
-
