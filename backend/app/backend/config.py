@@ -53,4 +53,4 @@ email_port = os.getenv("EMAIL_PORT")
 redis_client = redis.Redis(host=os.getenv("REDIS_HOST"), port=os.getenv("REDIS_PORT"), db=0)
 
 # Cors settings
-cors_origins = os.getenv("CORS_ORIGINS").split(",") or ["*"] # List of allowed origins
+cors_origins = os.getenv("CORS_ORIGINS").split(" ") or ["*"] # List of allowed origins
