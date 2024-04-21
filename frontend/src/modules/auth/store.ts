@@ -45,7 +45,7 @@ const useAuthStore = create(
       signin: async ({ email, password }) => {
         const params = new URLSearchParams({ email, password }).toString();
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/login/?${params}`,
+          `${import.meta.env.VITE_BASE_URL}/lms/login/?${params}`,
           {
             method: "POST",
             headers: new Headers({ "content-type": "application/json" }),
@@ -66,7 +66,7 @@ const useAuthStore = create(
           name,
         }).toString();
         const response = await fetch(
-          `${import.meta.env.VITE_BASE_URL}/register/?${params}`,
+          `${import.meta.env.VITE_BASE_URL}/lms/register/?${params}`,
           {
             method: "POST",
             headers: new Headers({ "content-type": "application/json" }),
