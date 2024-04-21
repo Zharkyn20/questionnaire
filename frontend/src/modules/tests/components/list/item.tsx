@@ -20,7 +20,7 @@ function Item({ title, mode }: Course) {
           </div>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="hidden items-center gap-2">
         <UpdateTestModal />
         <IconButton.Delete />
       </div>

@@ -8,10 +8,6 @@ const navItems = [
     name: "Program",
     anchor: "/",
   },
-  {
-    name: "Results",
-    anchor: "/results",
-  },
 ];
 
 const Header = () => {
@@ -40,7 +36,7 @@ const Header = () => {
         </div>
         <button className=" bg-white rounded-full p-2" onClick={() => navigate("/")}>
           <svg
-            enable-background="new 0 0 32 32"
+            enableBackground="new 0 0 32 32"
             height="32px"
             id="Layer_1"
             version="1.1"
@@ -55,8 +51,8 @@ const Header = () => {
                 stroke="#FFFFFF"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                stroke-miterlimit="10"
-                stroke-width="2"
+                strokeMiterlimit="10"
+                strokeWidth="2"
               />
               <polyline
                 fill="none"
@@ -64,8 +60,8 @@ const Header = () => {
                 stroke="#FFFFFF"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                stroke-miterlimit="10"
-                stroke-width="2"
+                strokeMiterlimit="10"
+                strokeWidth="2"
               />
               <polyline
                 fill="none"
@@ -73,8 +69,8 @@ const Header = () => {
                 stroke="#FFFFFF"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                stroke-miterlimit="10"
-                stroke-width="2"
+                strokeMiterlimit="10"
+                strokeWidth="2"
               />
             </g>
             <path d="M21.947,16.332C23.219,14.915,24,13.049,24,11c0-4.411-3.589-8-8-8s-8,3.589-8,8s3.589,8,8,8  c1.555,0,3.003-0.453,4.233-1.224c4.35,1.639,7.345,5.62,7.726,10.224H4.042c0.259-3.099,1.713-5.989,4.078-8.051  c0.417-0.363,0.46-0.994,0.097-1.411c-0.362-0.416-0.994-0.46-1.411-0.097C3.751,21.103,2,24.951,2,29c0,0.553,0.448,1,1,1h26  c0.553,0,1-0.447,1-1C30,23.514,26.82,18.615,21.947,16.332z M10,11c0-3.309,2.691-6,6-6s6,2.691,6,6s-2.691,6-6,6S10,14.309,10,11z  " />
