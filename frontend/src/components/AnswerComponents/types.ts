@@ -1,5 +1,5 @@
 
 export type BaseChoiseProps = {
-  options: string[];
+  options?: string[];
   onChange: (value: string | string[] | boolean) => void;
 }

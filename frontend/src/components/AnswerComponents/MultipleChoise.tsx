@@ -14,8 +14,8 @@ const MultipleChoise = ({ options, onChange }: MultipleChoiseProps) => {
   };
 
   return (
-    <div className="grid grid-cols-2 w-full gap-4">
-      {options.map((option) => (
+    <div className="grid md:grid-cols-2 w-full gap-4">
+      {options?.map((option) => (
         <Button selected={selectedOptions.includes(option)} onClick={() => handleClick(option)}>
           <p className="text-2xl">{option}</p>
         </Button>
