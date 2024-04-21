@@ -23,6 +23,7 @@ def divide_course(course, course_content):
             "course_id": course.id,
         })
 
+    print("list_of_subtopics", list_of_subtopics)
     return list_of_subtopics
 
 
@@ -32,8 +33,9 @@ def parse_content(content):
     for section in sections:
         if section.strip():
             # Extract title
-            title_start_index = section.find(" ")
-            title = section[:title_start_index].strip()
+            title_start_index = section.find(". ")
+            title_end_index = section.find("\n", title_start_index)
+            title = section[title_start_index:title_end_index].strip()
 
             # Extract content
             content_start_index = section.find("\n") + len("\n")
