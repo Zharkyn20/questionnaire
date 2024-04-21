@@ -19,10 +19,13 @@ const contents = [
 ];
 
 const DetailedPage = () => {
-  const { mutateAsync, isPending } = useMutation({ mutationFn: createLink, mutationKey: ["createLink"] });
+  const { mutateAsync, isPending } = useMutation({
+    mutationFn: createLink,
+    mutationKey: ["createLink"],
+  });
   const { id } = useParams();
 
-  const content = id && contents[Number(id)];
+  const content = id && contents[Number(id) - 1];
 
   const handleTestClick = async () => {
     const response = await mutateAsync(Number(id));
@@ -38,7 +41,10 @@ const DetailedPage = () => {
     <div className="container py-40 mx-auto">
       <p className="text-3xl text-slate-800">{content.title}</p>
       <p className="mt-8">{content.data}</p>
-      <button onClick={handleTestClick} className=" py-4 px-8 bg-zinc-800 text-2xl mt-10 text-white">
+      <button
+        onClick={handleTestClick}
+        className=" py-4 px-8 bg-zinc-800 text-2xl mt-10 text-white"
+      >
         {isPending ? <Loader /> : "Test yourself"}
       </button>
     </div>

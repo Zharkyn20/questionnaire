@@ -5,12 +5,12 @@ const topics = [
     title: "Machine Learning",
     description:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis consequuntur odio adipisci iste laborum, nam at, tempora optio earum esse illum dignissimos eaque corporis debitis quod! Corporis necessitatibus voluptas quidem!",
-    to: "0",
+    to: "1",
     img: "https://readymadeui.com/cardImg.webp",
   },
   {
     title: "Applications of machine learning",
-    to: "1",
+    to: "2",
     description:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis consequuntur odio adipisci iste laborum, nam at, tempora optio earum esse illum dignissimos eaque corporis debitis quod! Corporis necessitatibus voluptas quidem!",
     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUScWEx39bdbZd4DSZbpFtgOS7D4YOqOtsknxqKQDxNg&s",
@@ -19,7 +19,7 @@ const topics = [
     title: "What is machine learning?",
     description:
       "Lorem ipsum dolor sit amet consectetur adipisicing elit. Facilis consequuntur odio adipisci iste laborum, nam at, tempora optio earum esse illum dignissimos eaque corporis debitis quod! Corporis necessitatibus voluptas quidem!",
-    to: "2",
+    to: "3",
     img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2ZvEZrYntTdzh1CKaJuNXA6506L4HQnbTo0ReqXGtKg&s",
   },
 ];
@@ -57,12 +57,17 @@ const ProgramPage = () => {
       <div className=" container m-auto mt-4">
         <div className="flex w-full justify-between">
           <h1 className="text-2xl">The Modern JavaScript Tutorial</h1>
-          <p className=" text-md text-zinc-600">Last updated on April 20, 2024</p>
+          <p className=" text-md text-zinc-600">
+            Last updated on April 20, 2024
+          </p>
         </div>
-        <h2>How it's done now. From the basics to advanced topics with simple, but detailed explanations.</h2>
+        <h2>
+          How it's done now. From the basics to advanced topics with simple, but
+          detailed explanations.
+        </h2>
         <div className="grid grid-cols-3 gap-6 my-8">
-          {topics.map((topic) => (
-            <TopicCard {...topic} />
+          {topics.map((topic, index) => (
+            <TopicCard key={index} {...topic} />
           ))}
         </div>
       </div>
