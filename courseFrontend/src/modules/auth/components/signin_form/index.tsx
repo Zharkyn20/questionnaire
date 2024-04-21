@@ -1,13 +1,13 @@
+
 import Input from "@/components/shared/input";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schema } from "./schema";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import Button from "@/components/shared/Button";
-import useAuthStore from "../../store";
 
-function SignUpForm() {
+function SignInForm() {
   const {
     register,
     handleSubmit,
@@ -16,53 +16,43 @@ function SignUpForm() {
     resolver: yupResolver(schema),
   });
 
-  const userState = useAuthStore();
-  const [loading, setLoading] = useState(false);
-
-  const signup = useCallback(
+  const signin = useCallback(
     async (data: { email: string; password: string }) => {
-      setLoading(true);
-      await userState.signin({ email: data.email, password: data.password });
-      setLoading(false);
+      console.log(data);
     },
-    [userState]
+    []
   );
 
   return (
     <div className="w-full max-w-80 mx-auto">
       <h1 className="text-center text-xl mb-4 font-normal">
-        Join to <span className="text-primary">Questionnaire</span>
+        Sign in to <span className="text-primary">Questionnaire</span>
       </h1>
       <form
         className="border border-gray-200 rounded-lg shadow bg-gray-100 py-6 px-6 mx-auto grid gap-4"
-        onSubmit={handleSubmit(signup)}
+        onSubmit={handleSubmit(signin)}
       >
         <Input
           label="Email"
           error={errors.email?.message}
           {...register("email")}
         />
-        <Input
-          label="Company name"
-          error={errors.email?.message}
-          {...register("company_name")}
-        />
         <Input.Password
           label="Password"
           {...register("password")}
           error={errors.password?.message}
         />
-        <Button type="submit" loading={loading}>
-          <span className="font-medium">Sign up</span>
+        <Button type="submit">
+          <span className="font-medium">Sign in</span>
         </Button>
         <div>
           <p className="text-center">
-            Already registered?{" "}
+            New to Questionnaire?{" "}
             <Link
-              to="/signin"
+              to="/signup"
               className="text-primary hover:underline underline-offset-2 text-nowrap"
             >
-              Sign in
+              Create an account
             </Link>
           </p>
         </div>
@@ -71,4 +61,4 @@ function SignUpForm() {
   );
 }
 
-export default SignUpForm;
+export default SignInForm;
