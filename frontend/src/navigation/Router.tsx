@@ -8,6 +8,7 @@ import { CommonRoutes } from "@/navigation/common/routes";
 import { AuthRoutes } from "./auth/routes";
 import { Outlet, Navigate } from "react-router-dom";
 import useAuthStore from "@/modules/auth/store";
+import QuestionnairePage from "./questionnaire/QuestionnairePage";
 
 const PrivateRoutes = () => {
   const userState = useAuthStore();
@@ -19,9 +20,16 @@ const AuthRoutesElement = () => {
   return userState.access_token ? <Navigate to="/" /> : <Outlet />;
 };
 
+const PublicRoutes = (
+  <>
+    <Route path="/test/:id" element={<QuestionnairePage />} />
+  </>
+)
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
+      {PublicRoutes}
       <Route element={<PrivateRoutes />}>{CommonRoutes}</Route>
       <Route element={<AuthRoutesElement />}>{AuthRoutes}</Route>
     </Route>
