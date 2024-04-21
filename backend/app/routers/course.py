@@ -72,6 +72,7 @@ async def get_all_courses(session: Session = Depends(get_db_session)):
             "id": course.id,
             "title": course.title,
             "description": course.description,
+            "mode": course.mode,
             "subtopics": [subtopic.title for subtopic in course.subtopics]
         }
         courses_dict.append(course_dict)
