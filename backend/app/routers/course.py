@@ -148,7 +148,7 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
     subtopic.questions_amount = question_amount
     session.commit()
 
-    generated = generate_question(question_amount, subtopic.id, subtopic.description)
+    generated = generate_question(question_amount, subtopic.id, subtopic.description, session=session)
 
     if generated:
         subtopic.questions_generated = True
