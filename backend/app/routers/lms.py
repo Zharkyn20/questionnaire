@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+# from backend.app.backend.azure_language_processing import sample
 from backend.app.backend.config import get_db_session
+# from backend.app.backend.gemini import gemini
 from backend.app.models import LMS
 from backend.app.services.auth import create_access_token, create_refresh_token, verify_token
 from backend.app.services.verify_email import send_code_to_email, verify_verification_code, check_email_is_verified
@@ -36,7 +38,7 @@ async def verify_code(email: str, code: str):
 
 
 @router.post("/register/")
-async def register_user(email: str, password: str, db: Session = Depends(get_db_session)):
+async def register_user(email: str, name: str, password: str, db: Session = Depends(get_db_session)):
     """
     Register a new LMS - Learning Management System.
     """
@@ -44,7 +46,7 @@ async def register_user(email: str, password: str, db: Session = Depends(get_db_
     if user:
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    user = LMS(email=email)
+    user = LMS(email=email, name=name)
     is_email_verified = check_email_is_verified(email)
     if not is_email_verified:
         raise HTTPException(status_code=400, detail="Email is not verified")
@@ -96,3 +98,11 @@ async def refresh_tokens(refresh_token: str, db: Session = Depends(get_db_sessio
         }
     except Exception as e:
         raise HTTPException(status_code=401, detail="Invalid token")
+#
+# @router.get("/lms/")
+# async def get_lms(db: Session = Depends(get_db_session)):
+#     """
+#     Get all LMS.
+#     """
+#     response = gemini()
+#     return response
