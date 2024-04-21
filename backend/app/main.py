@@ -1,6 +1,7 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.backend.config import Base, engine
+from backend.app.backend.config import Base, engine, cors_origins
 from backend.app.const import (
     OPEN_API_DESCRIPTION,
     OPEN_API_TITLE,
@@ -14,6 +15,16 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=OPEN_API_TITLE,
     description=OPEN_API_DESCRIPTION,
+)
+
+origins = cors_origins
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
