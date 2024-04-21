@@ -27,7 +27,7 @@ export const getQuestion = async (params: getQuestionParams) => {
     await axios<unknown, AxiosResponse<GetQuestionResponse | TestFinishedResponse>>({
       method: "get",
       baseURL: BASE_URL,
-      url: "question/get/",
+      url: "question/",
       params,
     })
   ).data;

@@ -23,14 +23,16 @@ const QuestionnaireContent = () => {
   const {
     data: questionData,
     isLoading: isQuestionLoading,
+    isFetching: isQuestionFetching,
     refetch,
   } = useQuery({ queryKey: ["question", token], queryFn: () => getQuestion({ token }) });
   const { mutateAsync, data: checkAnswerData } = useMutation({ mutationKey: ["checkAnswer"], mutationFn: checkAnswer });
+
   console.log(questionData, checkAnswerData);
   const [answerValue, setAnswerValue] = useState<AnswerType>();
   const [answerResponse, setAnswerResponse] = useState<CheckAnswerResponse>();
 
-  const testIsFinished = questionData !== undefined && "message" in questionData;
+  const testIsFinished = questionData  && "message" in questionData;
 
   const handleAnswerChange = (value: AnswerType) => {
     setAnswerValue(value);
@@ -78,7 +80,7 @@ const QuestionnaireContent = () => {
     );
   }
 
-  if (isQuestionLoading)
+  if (isQuestionLoading || isQuestionFetching)
     return (
       <div className="flex justify-center items-center gap-4">
         <Loader />
@@ -89,7 +91,7 @@ const QuestionnaireContent = () => {
   if (!questionData) {
     return (
       <div className="flex justify-center items-center gap-4">
-        <div className="text-2xl text-slate-700">Sorry, our service currently is not working</div>
+        <div className="text-2xl text-slate-700">Sorry, this page isn't available</div>
       </div>
     );
   }
