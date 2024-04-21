@@ -1,21 +1,22 @@
 from sqlite3 import IntegrityError
 from typing import List
 import pdfplumber
-from models.course import Course, SubTopic, Question
-from backend.config import session
+from backend.app.models.course import Course, SubTopic, Question
+from backend.app.backend.config import get_db_session
 from sqlalchemy.orm import joinedload
-from azure_ai.generate_question import generate_question
-from azure_ai.generate_link import get_test_link
-from azure_ai.generate_link import open_token
-from azure_ai.check_input import check_input
-from azure_ai.divide_course import divide_course
+from backend.app.azure_ai.generate_question import generate_question
+from backend.app.azure_ai.generate_link import get_test_link
+from backend.app.azure_ai.generate_link import open_token
+from backend.app.azure_ai.check_input import check_input
+from backend.app.azure_ai.divide_course import divide_course
 
 from fastapi import HTTPException, File, UploadFile
 import io
 import PyPDF2
+from sqlalchemy.orm import Session
 
 from fastapi import (
-    APIRouter,
+    APIRouter, Depends,
 )
 
 router = APIRouter()
@@ -23,7 +24,7 @@ router = APIRouter()
 
 # Course Logic
 @router.post("/course/create/", tags=["courses"])
-async def create_course(title: str, mode: str, description: str = "", file: UploadFile = File(None)):
+async def create_course(title: str, mode: str, description: str = "", file: UploadFile = File(None), session: Session = Depends(get_db_session)):
 
     try:
         if file is not None:
@@ -62,7 +63,7 @@ async def create_course(title: str, mode: str, description: str = "", file: Uplo
 
 
 @router.get("/course/get/", tags=["courses"])
-async def get_all_courses():
+async def get_all_courses(session: Session = Depends(get_db_session)):
     courses_query = session.query(Course).options(joinedload(Course.subtopics))
     courses = courses_query.all()
 
@@ -80,7 +81,7 @@ async def get_all_courses():
 
 
 @router.get("/course/get/", tags=["courses"])
-async def get_course(course_id: int):
+async def get_course(course_id: int, session: Session = Depends(get_db_session)):
     course = session.query(Course).filter(Course.id == course_id).options(joinedload(Course.subtopics)).first()
 
     if course is None:
@@ -100,7 +101,7 @@ async def get_course(course_id: int):
 
 # There цe receive data about the course and generate questions for it
 @router.post("/subtopic/create/", tags=["subtopics"])
-async def create_subtopic(title: str, description: str, course_id: int):
+async def create_subtopic(title: str, description: str, course_id: int, session: Session = Depends(get_db_session)):
     course = session.query(Course).filter(Course.id == course_id).first()
     if course is None:
         return {
@@ -129,7 +130,7 @@ async def create_subtopic(title: str, description: str, course_id: int):
 
 
 @router.get("/subtopic/get/", tags=["subtopics"])
-async def get_subtopic(subtopic_id: int):
+async def get_subtopic(subtopic_id: int, session: Session = Depends(get_db_session)):
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
 
     if not subtopic:
@@ -139,7 +140,7 @@ async def get_subtopic(subtopic_id: int):
 
 # Link Logik
 @router.post("/link/create/", tags=["link"])
-async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amount: int = 10):
+async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amount: int = 10, session: Session = Depends(get_db_session)):
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
     if subtopic is None:
         return {"error": "Course not found"}
@@ -160,7 +161,7 @@ async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amou
 
 # Question Logik
 @router.get("/question/get/", tags=["question"])
-async def get_question(token: str):
+async def get_question(token: str, session: Session = Depends(get_db_session)):
     subtopic_id = int(open_token(int(token)))
 
     subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).options(
@@ -184,7 +185,8 @@ async def check_question(
     answer: str = "",
     answers: List[str] = None,
     input_answer: str = "",
-    bool_answer: bool = False
+    bool_answer: bool = False,
+    session: Session = Depends(get_db_session)
 ):
 
     question = session.query(Question).filter(Question.id == question_id).first()
