@@ -1,15 +1,12 @@
-<<<<<<< HEAD
 from enum import Enum as ENUM
 
 from sqlalchemy import Column, Integer, String, ForeignKey, ARRAY, Boolean, Text
-from backend.config import Base, engine
+from backend.app.backend.config import Base, engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import BYTEA
-=======
 from sqlalchemy import Column, Integer, String
 
 from backend.app.backend.config import Base
->>>>>>> 6161f1c (Auth Feature)
 
 
 class Course(Base):
@@ -18,7 +15,6 @@ class Course(Base):
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
     description = Column(String, index=True)
-<<<<<<< HEAD
     file_content = Column(BYTEA, nullable=True)
 
     subtopics = relationship("SubTopic", back_populates="course")
@@ -75,8 +71,3 @@ class Question(Base):
 
     # time for answer
     time = Column(Integer, nullable=True)
-
-
-Base.metadata.create_all(engine)
-=======
->>>>>>> 6161f1c (Auth Feature)
