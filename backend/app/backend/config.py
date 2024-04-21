@@ -54,3 +54,9 @@ redis_client = redis.Redis(host=os.getenv("REDIS_HOST"), port=os.getenv("REDIS_P
 
 # Cors settings
 cors_origins = os.getenv("CORS_ORIGINS").split(" ") or ["*"] # List of allowed origins
+
+# ChatGPT settings
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+# Azure settings
+azure_key, azure_endpoint = os.getenv("AZURE_QUESTIONANSWERING_KEY"), os.getenv("AZURE_QUESTIONANSWERING_ENDPOINT")
