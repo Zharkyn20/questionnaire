@@ -16,8 +16,6 @@ class User(Base):
     userquestions = relationship("Question", back_populates="user")
 
 
-
-
 class Course(Base):
     __tablename__ = "courses"
 
@@ -28,6 +26,8 @@ class Course(Base):
     # If True will dynamically add question in the queue
     mode = Column(String, index=True)
     usercourses = relationship("UserCourse", back_populates="course")
+    # relation with user
+    lms_id = Column(Integer)
 
 
 class UserCourse(Base):
