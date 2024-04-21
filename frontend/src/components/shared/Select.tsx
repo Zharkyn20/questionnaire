@@ -14,7 +14,7 @@ interface Props {
 }
 
 export type Option = Nullable<{
-  id: number;
+  value: string | number;
   name: string;
 }>;
 
@@ -32,9 +32,7 @@ export default function Select({
       <Listbox value={value} onChange={onChange}>
         {({ open }) => (
           <>
-            {label && (
-              <p className="text-sm mb-1">{label}</p>
-            )}
+            {label && <p className="text-sm mb-1">{label}</p>}
             <Listbox.Button
               className={classNames(
                 "p-3 border rounded-[5px] w-full bg-inputs flex justify-between gap-4 items-center text-sm",
@@ -75,7 +73,7 @@ export default function Select({
                   <Listbox.Options className="p-5 grid gap-4 border border-stroke rounded-[5px] absolute top-[calc(100%+4px)] left-0 w-full bg-white">
                     {options.map((option) => (
                       <Listbox.Option
-                        key={option?.id}
+                        key={option?.value}
                         value={option}
                         className="cursor-pointer hover:text-orange text-sm"
                       >
