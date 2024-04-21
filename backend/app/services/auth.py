@@ -1,3 +1,5 @@
+from typing import Optional
+
 import jwt
 from datetime import datetime, timedelta
 
@@ -37,14 +39,18 @@ def verify_token(token: str):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-def get_current_user(authorization: str = Header(...)):
+def get_current_user(authorization: Optional[str] = Header(None)):
     """
     Get the current user based on the authorization token.
     """
+    print('authorization', authorization)
+    if authorization is None or not authorization:
+        raise HTTPException(status_code=401, detail="Authorization header is required")
     token = authorization.split(" ")[1]
     try:
         payload = verify_token(token)
         email = payload.get("sub")
+        print('email', email)
         if email is None:
             raise HTTPException(status_code=401, detail="Invalid token")
         db = next(get_db_session())
@@ -54,11 +60,12 @@ def get_current_user(authorization: str = Header(...)):
         raise HTTPException(status_code=401, detail="Invalid token")
 
 
-def is_authenticated(current_user: str = Depends(get_current_user)):
+def is_authenticated(current_user: Optional[LMS] = Depends(get_current_user)) -> Optional[LMS]:
     """
     Check if the user is authenticated.
     """
     if current_user:
+        print(current_user.email)
         return True
     else:
         raise HTTPException(status_code=401, detail="Not authenticated")
