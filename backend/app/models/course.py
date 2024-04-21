@@ -6,7 +6,6 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import BYTEA
 
 
-
 class Course(Base):
     __tablename__ = "courses"
 
@@ -61,7 +60,6 @@ class Question(Base):
     # question type
     # type = Column(Enum(QuestionType), nullable=True)
     type = Column(String, nullable=True)
-
 
     answers = Column(ARRAY(String), nullable=True)
     answer = Column(String, nullable=True)
