@@ -59,11 +59,6 @@ def generate_question(amount, subtopic_id, description, user_id, session: Sessio
             type="single",
             answer=ast.literal_eval(str(q))["correct_answer"],
             time=9,
-            # variants=[ast.literal_eval(str(q))["incorrect_answer_1"],
-            #           ast.literal_eval(str(q))["incorrect_answer_1"],
-            #           ast.literal_eval(str(q))["incorrect_answer_1"],
-            #           ast.literal_eval(str(q))["correct_answer"]
-            #           ],
             variants=variants,
             user_id=user_id,
             answers=None,
@@ -73,6 +68,49 @@ def generate_question(amount, subtopic_id, description, user_id, session: Sessio
         session.commit()
 
     return True
+
+
+def generate_question_boolean(amount, subtopic_id, description, user_id, session: Session = Depends(get_db_session)):
+
+    response = gpt.generate_chat_completion(
+        messages=[
+            {"role": "system",
+             "content": f"You are a virtual assistant, who creates {amount} questionsin boolean format where will be answer true or false."
+                        " The full response should be a valid python list of dictionaries without any string and data"
+                        "(question_text, answer) every key in dict should be in double quotes"},
+            {"role": "user", "content": description}
+        ],
+    )
+
+    response_content = response.content
+
+    word_to_delete = "python"
+    valid_data = delete_word_at_start(str(response_content), word_to_delete)
+
+    data = json.loads(str(valid_data))
+
+    counter = 0
+    for q in data:
+        print(ast.literal_eval(str(q))["question_text"])
+        print(bool(ast.literal_eval(str(q))["answer"]))
+
+        question = Question(
+            number=counter,
+            answered=False,
+            subtopic_id=subtopic_id,
+            question=ast.literal_eval(str(q))["question_text"],
+            type="bool",
+            time=9,
+            user_id=user_id,
+            answers=None,
+            bool_answer=bool(ast.literal_eval(str(q))["answer"]),
+        )
+        counter += 1
+        session.add(question)
+        session.commit()
+
+    return True
+
 
 
 
