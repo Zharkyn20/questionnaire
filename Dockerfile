@@ -11,7 +11,7 @@ WORKDIR /questionnaire
 RUN pip install --upgrade pip
 COPY backend/requirements.txt ./
 RUN pip install -r requirements.txt
-COPY backend/entrypoint.sh /entrypoint.sh
+COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 COPY . /questionnaire/
