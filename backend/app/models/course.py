@@ -1,9 +1,12 @@
 from enum import Enum as ENUM
 
 from sqlalchemy import Column, Integer, String, ForeignKey, ARRAY, Boolean, Text
-from backend.config import Base, engine
+from backend.app.backend.config import Base, engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import BYTEA
+from sqlalchemy import Column, Integer, String
+
+from backend.app.backend.config import Base
 
 
 class Course(Base):
@@ -68,6 +71,3 @@ class Question(Base):
 
     # time for answer
     time = Column(Integer, nullable=True)
-
-
-Base.metadata.create_all(engine)
