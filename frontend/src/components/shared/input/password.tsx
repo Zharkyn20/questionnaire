@@ -36,6 +36,7 @@ const Password = React.forwardRef<HTMLInputElement, Props>(function MyInput(
         />
         {isHidden ? (
           <button
+            type="button"
             className="absolute right-0 h-full px-3"
             onClick={handleShowPassword}
           >

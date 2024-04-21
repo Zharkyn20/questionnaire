@@ -1,3 +1,4 @@
+import useAuthStore from "@/modules/auth/store";
 import axios, { AxiosInstance, AxiosResponse, AxiosError } from "axios";
 
 interface TokenResponse {
@@ -6,7 +7,6 @@ interface TokenResponse {
 }
 
 interface ApiClient {
-  login: (email: string, password: string) => Promise<void | AxiosError>;
   get: <T>(path: string) => Promise<T>;
   post: <T>(path: string, data: T) => Promise<T>;
   put: <T>(path: string, data: T) => Promise<T>;
@@ -14,8 +14,9 @@ interface ApiClient {
 }
 
 export const ApiClient = (): ApiClient => {
+  const userState = useAuthStore();
   const api: AxiosInstance = axios.create({
-    baseURL: "URL",
+    baseURL: import.meta.env.VITE_BASE_URL,
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -24,7 +25,7 @@ export const ApiClient = (): ApiClient => {
 
   api.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem("access_token");
+      const token = userState.access_token;
       if (token) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -41,9 +42,9 @@ export const ApiClient = (): ApiClient => {
       if (
         originalRequest &&
         error.response?.status === 401 &&
-        localStorage.getItem("refresh_token")
+        userState.access_token
       ) {
-        const refreshToken = localStorage.getItem("refresh_token");
+        const refreshToken = userState.refresh_token;
 
         const data = JSON.stringify({
           refresh_token: refreshToken,
@@ -51,13 +52,13 @@ export const ApiClient = (): ApiClient => {
 
         try {
           const response = await api.post<TokenResponse>("/refresh", data);
-          localStorage.setItem("access_token", response.data.token);
-          localStorage.setItem("refresh_token", response.data.refresh_token);
+
+          userState.updateToken(response.data.token);
 
           originalRequest.headers.Authorization = `Bearer ${response.data.token}`;
           return await api(originalRequest);
         } catch (err) {
-          console.log(err);
+          userState.signout();
         }
       }
 
@@ -65,34 +66,18 @@ export const ApiClient = (): ApiClient => {
     }
   );
 
-  const login = async (
-    email: string,
-    password: string
-  ): Promise<void | AxiosError> => {
-    try {
-      const { data } = await api.post("/authentication_token", {
-        email,
-        password,
-      });
-      localStorage.setItem("access_token", data.token);
-      localStorage.setItem("refresh_token", data.refresh_token);
-    } catch (err) {
-      return err as AxiosError;
-    }
-  };
-
   const get = async <T,>(path: string): Promise<T> => {
     const response = await api.get<T>(path);
     return response.data;
   };
 
   const post = async <T,>(path: string, data: T): Promise<T> => {
-    const response = await api.post<T>(path, data);
+    const response = await api.post<T>(path, null, { params: data });
     return response.data;
   };
 
   const put = async <T,>(path: string, data: T): Promise<T> => {
-    const response = await api.put<T>(path, data);
+    const response = await api.put<T>(path, null, { params: data });
     return response.data;
   };
 
@@ -102,7 +87,6 @@ export const ApiClient = (): ApiClient => {
   };
 
   return {
-    login,
     get,
     post,
     put,
