@@ -8,8 +8,11 @@ from azure_ai.generate_question import generate_question
 from azure_ai.generate_link import get_test_link
 from azure_ai.generate_link import open_token
 from azure_ai.check_input import check_input
-from fastapi import HTTPException
-
+from fastapi import HTTPException, File, UploadFile
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.backends import default_backend
+import base64
 
 from fastapi import (
     APIRouter,
@@ -20,12 +23,16 @@ router = APIRouter()
 
 # Course Logic
 @router.post("/course/create/", tags=["courses"])
-async def create_course(title: str, description: str):
+async def create_course(title: str, mode: str, description: str = "", file: UploadFile = File(None)):
     try:
-        course = Course(title=title, description=description)
+        if file is not None:
+            content = await file.read()
+            course = Course(title=title, description=description, mode=mode, file_content=content)
+        else:
+            course = Course(title=title, description=description, mode=mode)
+
         session.add(course)
         session.commit()
-
         return {
             "message": "Course created",
             "course_title": course.title
@@ -35,6 +42,7 @@ async def create_course(title: str, description: str):
         return {
             "error": f"Failed to create course: {str(e)}"
         }
+
 
 
 @router.get("/course/get/", tags=["courses"])
@@ -76,7 +84,7 @@ async def get_course(course_id: int):
 
 # There цe receive data about the course and generate questions for it
 @router.post("/subtopic/create/", tags=["subtopics"])
-async def create_subtopic(title: str, description: str, course_id: int, question_amount: int = 10):
+async def create_subtopic(title: str, description: str, course_id: int):
     course = session.query(Course).filter(Course.id == course_id).first()
     if course is None:
         return {
@@ -84,15 +92,15 @@ async def create_subtopic(title: str, description: str, course_id: int, question
         }
 
     try:
-        subtopic = SubTopic(title=title, description=description, course_id=course_id, questions_amount=question_amount)
+        subtopic = SubTopic(title=title, description=description, course_id=course_id)
         session.add(subtopic)
         session.commit()
 
-        generated = generate_question(question_amount, subtopic.id, description)
-
-        if generated:
-            subtopic.questions_generated = True
-            session.commit()
+        # generated = generate_question(question_amount, subtopic.id, description)
+        #
+        # if generated:
+        #     subtopic.questions_generated = True
+        #     session.commit()
 
         return {
             "message": "Subtopic created", "subtopic_title": subtopic.title
@@ -115,26 +123,68 @@ async def get_subtopic(subtopic_id: int):
 
 # Link Logik
 @router.post("/link/create/", tags=["link"])
-async def get_link(user_id: int):
-    link = get_test_link(user_id)
+async def get_link(user_id: int, course_id: int, subtopic_id: int, question_amount: int = 10):
+    subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).first()
+    subtopic.questions_amount = question_amount
+    session.commit()
+
+    # private_key = rsa.generate_private_key(
+    #     public_exponent=65537,
+    #     key_size=2048,
+    #     backend=default_backend()
+    # )
+    #
+    # public_key = private_key.public_key()
+
+    # subtopic.public_key = public_key
+    # subtopic.private_key = private_key
+    # session.commit()
+
+    generated = generate_question(question_amount, subtopic.id, subtopic.description)
+
+    if generated:
+        subtopic.questions_generated = True
+        session.commit()
+
+    # encrypted_data = public_key.encrypt(
+    #     course_id.encode(),
+    #     padding.OAEP(
+    #         mgf=padding.MGF1(algorithm=padding.SHA256()),
+    #         algorithm=padding.SHA256(),
+    #         label=None
+    #     )
+    # )
+
+    # encrypted_data_str = base64.b64encode(encrypted_data).decode()
+
     return {
-        "url": link,
+        "url": "fronlink/" + str(subtopic_id),
     }
 
 
 # Question Logik
 @router.get("/question/get/", tags=["question"])
-async def get_question(token: int):
-    # пока что токен = айди подтемы
-    subtopic_id = int(open_token(token))
+async def get_question(token: str):
+    # encrypted_data = base64.b64decode(encrypted_data_str)
+    #
+    # decrypted_data = private_key.decrypt(
+    #     encrypted_data,
+    #     padding.OAEP(
+    #         mgf=padding.MGF1(algorithm=padding.SHA256()),
+    #         algorithm=padding.SHA256(),
+    #         label=None
+    #     )
+    # )
 
-    subtopic = session.query(SubTopic).filter(SubTopic.id == subtopic_id).options(
+    # subtopic_id = int(open_token(token))
+
+    subtopic = session.query(SubTopic).filter(SubTopic.id == token).options(
         joinedload(SubTopic.questions)).first()
 
     if subtopic.current_question == subtopic.questions_amount:
         return {"message": "Test finished"}
 
-    question = session.query(Question).filter(Question.subtopic_id == subtopic_id, Question.number == subtopic.current_question).first()
+    question = session.query(Question).filter(Question.subtopic_id == token, Question.number == subtopic.current_question).first()
     return question
 
 
