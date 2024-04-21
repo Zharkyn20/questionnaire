@@ -32,7 +32,7 @@ export default function CreateTestForm({ closeModal }: Props) {
   const submit: SubmitHandler<yup.InferType<typeof schema>> = async (data) => {
     const formData = new FormData();
     formData.append("title", data.title);
-    formData.append("file", data.file);
+    data.file && formData.append("file", data.file[0]);
     formData.append("mode", mode?.value as string);
     await mutation.mutateAsync(formData);
     toast.success("Test created", {
