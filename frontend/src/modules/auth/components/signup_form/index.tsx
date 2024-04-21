@@ -1,11 +1,11 @@
-
 import Input from "@/components/shared/input";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { schema } from "./schema";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import Button from "@/components/shared/Button";
+import useAuthStore from "../../store";
 
 function SignUpForm() {
   const {
@@ -16,11 +16,16 @@ function SignUpForm() {
     resolver: yupResolver(schema),
   });
 
-  const signin = useCallback(
+  const userState = useAuthStore();
+  const [loading, setLoading] = useState(false);
+
+  const signup = useCallback(
     async (data: { email: string; password: string }) => {
-      console.log(data);
+      setLoading(true);
+      await userState.signin({ email: data.email, password: data.password });
+      setLoading(false);
     },
-    []
+    [userState]
   );
 
   return (
@@ -30,7 +35,7 @@ function SignUpForm() {
       </h1>
       <form
         className="border border-gray-200 rounded-lg shadow bg-gray-100 py-6 px-6 mx-auto grid gap-4"
-        onSubmit={handleSubmit(signin)}
+        onSubmit={handleSubmit(signup)}
       >
         <Input
           label="Email"
@@ -47,7 +52,7 @@ function SignUpForm() {
           {...register("password")}
           error={errors.password?.message}
         />
-        <Button type="submit">
+        <Button type="submit" loading={loading}>
           <span className="font-medium">Sign up</span>
         </Button>
         <div>
