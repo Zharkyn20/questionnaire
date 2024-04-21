@@ -15,9 +15,7 @@ class User(Base):
     usercourses = relationship("UserCourse", back_populates="user")
     userquestions = relationship("Question", back_populates="user")
 
-    __table_args__ = (
-        UniqueConstraint('name'),
-    )
+
 
 
 class Course(Base):
