@@ -44,7 +44,7 @@ class SubTopic(Base):
 
     id = Column(Integer, primary_key=True)
     title = Column(String, index=True)
-    description = Column(String, index=True)
+    description = Column(String(15000), index=True)
     course_id = Column(Integer, ForeignKey("courses.id"))
     course = relationship("Course", back_populates="subtopics")
     questions_amount = Column(Integer, default=10)
