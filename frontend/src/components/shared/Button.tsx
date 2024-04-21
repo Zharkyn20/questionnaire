@@ -6,15 +6,25 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   selected?: boolean;
 }
 
-function Button({ variant = "contained", children, type = "button", loading, disabled, selected, ...props }: Props) {
+function Button({
+  variant = "contained",
+  children,
+  type = "button",
+  loading,
+  disabled,
+  selected,
+  ...props
+}: Props) {
   return (
     <button
       {...props}
       type={type}
       className={classNames(
         "px-3 py-1.5 rounded transition relative",
-        variant === "contained" && "bg-primary  shadow-[0_5px_#c20045] hover:shadow-none hover:translate-y-[5px] text-white",
-        variant === "outlined" && "border border-primary text-primary hover:bg-primary/5",
+        variant === "contained" &&
+          "bg-primary  shadow-[0_5px_#c20045] active:shadow-none active:translate-y-[5px] text-white",
+        variant === "outlined" &&
+          "border border-primary text-primary hover:bg-primary/5",
         selected && "shadow-none bg-[#ff6f1b] translate-y-[5px]",
         props.className
       )}
@@ -25,7 +35,9 @@ function Button({ variant = "contained", children, type = "button", loading, dis
           <Loading variant={variant} />
         </div>
       )}
-      <div className={classNames(loading && "invisible")}>{children}</div>
+      <div className={classNames("font-medium", loading && "invisible")}>
+        {children}
+      </div>
     </button>
   );
 }
@@ -49,7 +61,10 @@ function Loading({ variant }: { variant: "outlined" | "contained" }) {
         cx="50"
         cy="50"
         fill="none"
-        className={classNames(variant === "contained" && "stroke-white", variant === "outlined" && "stroke-primary")}
+        className={classNames(
+          variant === "contained" && "stroke-white",
+          variant === "outlined" && "stroke-primary"
+        )}
         strokeWidth="10"
         r="35"
         strokeDasharray="164.93361431346415 56.97787143782138"

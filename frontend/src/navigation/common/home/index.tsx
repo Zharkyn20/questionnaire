@@ -1,5 +1,15 @@
+import CreateTestModal from "@/components/widgets/new_test";
+
 function HomePage() {
-  return <div className="text-lime-600 container">home page</div>;
+  return (
+    <main>
+      <div className="container">
+        <div className="h-screen flex justify-center items-center">
+          <CreateTestModal />
+        </div>
+      </div>
+    </main>
+  );
 }
 
 export default HomePage;
