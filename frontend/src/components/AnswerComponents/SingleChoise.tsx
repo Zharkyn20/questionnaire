@@ -14,7 +14,7 @@ const SingleChoise = ({ options, onChange }: SingleChoiseProps) => {
   return (
     <div className="grid sm:grid-cols-2 w-full gap-4">
       {options?.map((option) => (
-        <Button key={option} selected={option === selectedOption} onClick={() => handleClick(option)}>
+        <Button selected={option === selectedOption} onClick={() => handleClick(option)}>
           <p className="text-2xl">{option}</p>
         </Button>
       ))}
