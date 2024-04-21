@@ -4,19 +4,32 @@ interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "contained" | "outlined";
   loading?: boolean;
   selected?: boolean;
-  color?: "primary" | "secondary";
+  color?: string;
+  theme?: "primary" | "secondary";
 }
 
-function Button({ variant = "contained", children, type = "button", loading, disabled, selected, ...props }: Props) {
+function Button({
+  variant = "contained",
+  children,
+  type = "button",
+  theme = "primary",
+  loading,
+  disabled,
+  selected,
+  ...props
+}: Props) {
   return (
     <button
       {...props}
       type={type}
       className={classNames(
         "px-3 py-1.5 rounded transition relative",
-        variant === "contained" && " bg-primary shadow-[0_5px_#c20045] hover:shadow-none hover:translate-y-[5px] text-white",
-        variant === "outlined" && "border border-primary text-primary hover:bg-primary/5",
-        selected === true && " transition-none shadow-none brightness-90 outline outline-2 outline-blue-500 translate-y-[5px]",
+        variant === "contained" &&
+          `bg-${theme} shadow-[0_5px_#c20045] active:shadow-none active:translate-y-[5px] text-white`,
+        variant === "outlined" &&
+          `border border-${theme} text-${theme} hover:bg-primary/5`,
+        selected === true &&
+          "transition-none shadow-none brightness-90 outline outline-2 outline-blue-500 translate-y-[5px]",
         props.className
       )}
       disabled={loading || disabled}
@@ -26,7 +39,9 @@ function Button({ variant = "contained", children, type = "button", loading, dis
           <Loading variant={variant} />
         </div>
       )}
-      <div className={classNames("font-medium", loading && "invisible")}>{children}</div>
+      <div className={classNames("font-medium", loading && "invisible")}>
+        {children}
+      </div>
     </button>
   );
 }
@@ -50,7 +65,10 @@ function Loading({ variant }: { variant: "outlined" | "contained" }) {
         cx="50"
         cy="50"
         fill="none"
-        className={classNames(variant === "contained" && "stroke-white", variant === "outlined" && "stroke-primary")}
+        className={classNames(
+          variant === "contained" && "stroke-white",
+          variant === "outlined" && "stroke-primary"
+        )}
         strokeWidth="10"
         r="35"
         strokeDasharray="164.93361431346415 56.97787143782138"
