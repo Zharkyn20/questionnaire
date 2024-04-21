@@ -1,3 +1,4 @@
+from backend.app.azure_ai.generate_question import delete_word_at_start
 from backend.app.chatgpt.controller import gpt
 
 
@@ -6,13 +7,19 @@ def divide_course(course, course_content):
 
     response = gpt.generate_chat_completion(
         messages=[
-            {"role": "system", "content": "You are a virtual assistant, who splits the course content into topics without changing topic description. The response should be a list of objects (number, title, content)"},
+            {"role": "system", "content": "You are a virtual assistant, who splits the course content into topics without changing topic description. "
+                                          "The full response should be a valid python list of dictionaries without any string and data(number, title, content)"},
             {"role": "user", "content": course_content}
         ],
     )
 
     print("response", response)
-    print("response.content", response.content)\
+    print("response.content", response.content)
+
+    response_content = response.content
+
+    word_to_delete = "python"
+    valid_data = delete_word_at_start(str(response_content), word_to_delete)
 
     parsed_content = parse_content(response.content)
     list_of_subtopics = []
