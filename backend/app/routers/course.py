@@ -79,7 +79,7 @@ async def get_all_courses(session: Session = Depends(get_db_session)):
     return courses_dict
 
 
-@router.get("/course/", tags=["courses"])
+@router.get("/course/{course_id}", tags=["courses"])
 async def get_course(course_id: int, session: Session = Depends(get_db_session)):
     course = session.query(Course).filter(Course.id == course_id).options(joinedload(Course.subtopics)).first()
 
