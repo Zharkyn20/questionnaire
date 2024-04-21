@@ -10,11 +10,6 @@ import { CheckAnswerParams, CheckAnswerResponse } from "../api/types";
 import FinishIllustration from "@/assets/Appreciation-bro.svg";
 import classNames from "classnames";
 
-const description = {
-  courseName: "It School",
-  topic: "Geography",
-};
-
 type AnswerType = string[] | string | boolean;
 
 const QuestionnaireContent = () => {
@@ -26,7 +21,7 @@ const QuestionnaireContent = () => {
     isFetching: isQuestionFetching,
     refetch,
   } = useQuery({ queryKey: ["question", token], queryFn: () => getQuestion({ token }) });
-  const { mutateAsync, data: checkAnswerData } = useMutation({ mutationKey: ["checkAnswer"], mutationFn: checkAnswer });
+  const { mutateAsync } = useMutation({ mutationKey: ["checkAnswer"], mutationFn: checkAnswer });
 
   const [answerValue, setAnswerValue] = useState<AnswerType>();
   const [answerResponse, setAnswerResponse] = useState<CheckAnswerResponse>();
@@ -97,10 +92,6 @@ const QuestionnaireContent = () => {
 
   return (
     <>
-      <div className="flex flex-col md:flex-row justify-between font-bold text-2xl">
-        <span className=" text-primary">{description.courseName}</span>
-        <span className=" text-slate-700">Topic: {description.topic}</span>
-      </div>
       <p className="text-2xl text-slate-800 font-semibold mt-8">{questionData.question}</p>
       {answerResponse ? (
         <>

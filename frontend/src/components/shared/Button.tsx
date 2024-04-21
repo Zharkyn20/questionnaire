@@ -12,7 +12,6 @@ function Button({
   variant = "contained",
   children,
   type = "button",
-  theme = "primary",
   loading,
   disabled,
   selected,
@@ -25,9 +24,9 @@ function Button({
       className={classNames(
         "px-3 py-1.5 rounded transition relative",
         variant === "contained" &&
-          `bg-${theme} shadow-[0_5px_#c20045] active:shadow-none active:translate-y-[5px] text-white`,
+          `bg-primary shadow-[0_5px_#c20045] active:shadow-none active:translate-y-[5px] text-white`,
         variant === "outlined" &&
-          `border border-${theme} text-${theme} hover:bg-primary/5`,
+          `border border-primary text-primary hover:bg-primary/5`,
         selected === true &&
           "transition-none shadow-none brightness-90 outline outline-2 outline-blue-500 translate-y-[5px]",
         props.className
