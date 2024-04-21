@@ -3,16 +3,18 @@ import CreateTestModal from "../create";
 import Item from "./item";
 
 function TestList() {
-  const { data } = useTestsQuery();
+  const { data, isFetching } = useTestsQuery();
   console.log(data);
   return (
     <div>
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        {data?.length && (
-          <h3 className="text-xl font-medium text-primary">
-            Total: {data?.length}
-          </h3>
-        )}
+        <div>
+          {!!data?.length && (
+            <h3 className="text-xl font-medium text-primary">
+              Total: {data?.length}
+            </h3>
+          )}
+        </div>
         <div className="flex justify-center">
           <CreateTestModal />
         </div>
@@ -26,11 +28,13 @@ function TestList() {
           </ul>
         </div>
       ) : (
-        <div className="border border-gray-200 px-4 py-[30vh] rounded-lg mt-4 bg-gray-50">
-          <h2 className="text-center text-lg text-gray-500 font-medium">
-            No courses yet
-          </h2>
-        </div>
+        !isFetching && (
+          <div className="border border-gray-200 px-4 py-[30vh] rounded-lg mt-4 bg-gray-50">
+            <h2 className="text-center text-lg text-gray-500 font-medium">
+              No courses yet
+            </h2>
+          </div>
+        )
       )}
     </div>
   );
