@@ -28,3 +28,20 @@ export default {
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+
+
+## Installation and Usage
+
+   ```
+   cd courseFrontend  #(move to directory)
+   ```
+
+1. Install dependencies using npm:
+
+   ```bash
+   npm install
+
+2. Run the application:
+    ```bash
+    npm run dev
+   

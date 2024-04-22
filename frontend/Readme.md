@@ -13,12 +13,15 @@ This is the frontend part of the application designed for taking surveys created
 
 ## Installation and Usage
 
+    cd frontend  #(move to directory)
+
 1. Install dependencies using npm:
 
    ```bash
    npm install
 
 2. Run the application:
+    ```bash
     npm run dev
 
 If you are an owner or an administrator of online courses, you can see Sign-up page and be able to create your personal account, however if you already have it there is an option to sign-in. When you are already created an account and logged in to website, you should create an Course.
