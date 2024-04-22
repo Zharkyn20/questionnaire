@@ -13,7 +13,7 @@ while reducing the burden on teachers for creating and grading questions.
 - [Link to Student side site](http://4.227.168.199:8001)
 
 ### Demo Video
-- [video](DEMO.mp4)
+- [video](https://drive.google.com/drive/folders/1NvN9EW0PMPb7csIWXB8bIS8FsE-E3N4_?usp=sharing)
 
 
 
